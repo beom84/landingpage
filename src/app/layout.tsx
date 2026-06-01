@@ -11,9 +11,9 @@ const hankenGrotesk = Hanken_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Trace | 막연한 목표를 행동으로",
+  title: "Trace AI | 막연한 목표를 행동으로",
   description:
-    "Trace는 막연한 목표를 오늘 바로 시작할 수 있는 첫 행동으로 나눠주는 ADHD 친화형 실행 랜딩 페이지입니다.",
+    "Trace AI는 막연한 목표를 오늘 바로 시작할 수 있는 첫 행동으로 나눠주는 ADHD 친화형 실행 랜딩 페이지입니다.",
 };
 
 export default function RootLayout({

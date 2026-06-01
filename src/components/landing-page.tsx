@@ -34,14 +34,7 @@ const footerLinks = [
   "문의하기",
 ] as const;
 
-type FeedbackTone = "helpful" | "confusing";
-
-type Recommendation = {
-  action: string;
-  betaPrompt: string;
-  note: string;
-  reason: string;
-};
+type GoalTopic = "study" | "fitness" | "content" | "work" | "general";
 
 function getLengthBucket(value: string) {
   const length = value.trim().length;
@@ -57,16 +50,11 @@ function getLengthBucket(value: string) {
   return "long";
 }
 
-function buildRecommendation(goal: string): Recommendation {
+function getGoalTopic(goal: string): GoalTopic {
   const normalized = goal.toLowerCase();
 
   if (normalized.includes("시험") || normalized.includes("공부")) {
-    return {
-      action: "시험 범위 사진 찍고 오늘 볼 페이지 3쪽만 표시하기",
-      betaPrompt: "공부 루틴용 3일 베타 플랜 받아보기",
-      note: "지금 필요한 건 의지보다 시작점을 보이게 만드는 일입니다.",
-      reason: "시험 준비는 범위가 흐릴수록 회피가 커져서, 가장 먼저 범위를 시각화하는 행동을 권합니다.",
-    };
+    return "study";
   }
 
   if (
@@ -74,12 +62,7 @@ function buildRecommendation(goal: string): Recommendation {
     normalized.includes("마라톤") ||
     normalized.includes("헬스")
   ) {
-    return {
-      action: "운동화 끈 묶고 현관 앞에 2분 서 있기",
-      betaPrompt: "운동 시작 루틴 베타 신청하기",
-      note: "몸을 움직이기 전에 준비 행동부터 자동화하는 편이 성공률이 높습니다.",
-      reason: "운동 목표는 시작 마찰이 가장 크기 때문에, 실제 운동보다 앞단의 준비 행동을 먼저 고정합니다.",
-    };
+    return "fitness";
   }
 
   if (
@@ -88,12 +71,7 @@ function buildRecommendation(goal: string): Recommendation {
     normalized.includes("콘텐츠") ||
     normalized.includes("기획")
   ) {
-    return {
-      action: "문서 제목만 쓰고 소제목 3개 초안 적기",
-      betaPrompt: "콘텐츠 제작 베타 워크플로우 보기",
-      note: "빈 문서의 압박을 줄이면 생각보다 빠르게 첫 문장이 나옵니다.",
-      reason: "창작 목표는 완성본을 떠올릴수록 막히기 쉬워서, 초안의 뼈대만 먼저 만듭니다.",
-    };
+    return "content";
   }
 
   if (
@@ -102,20 +80,10 @@ function buildRecommendation(goal: string): Recommendation {
     normalized.includes("개발") ||
     normalized.includes("서비스")
   ) {
-    return {
-      action: "해야 할 일 3개만 적고 15분 안에 끝날 일 하나 고르기",
-      betaPrompt: "업무 분해 베타 기능 먼저 써보기",
-      note: "큰 프로젝트는 방향보다 즉시 끝낼 수 있는 조각을 먼저 찾는 게 중요합니다.",
-      reason: "업무 목표는 범위가 넓을수록 착수 지연이 커져서, 시간제한이 짧은 한 조각을 먼저 고르게 합니다.",
-    };
+    return "work";
   }
 
-  return {
-    action: "목표를 한 문장으로 다시 적고 오늘 5분 안에 끝낼 첫 행동 1개만 정하기",
-    betaPrompt: "나만의 첫 행동 추천 베타 신청하기",
-    note: "아직 목표가 넓게 느껴진다면, Trace는 첫 행동부터 먼저 확정해 줍니다.",
-    reason: "막연한 목표일수록 첫 행동의 크기를 줄이는 것이 가장 빠른 진입점입니다.",
-  };
+  return "general";
 }
 
 export function LandingPage() {
@@ -124,13 +92,13 @@ export function LandingPage() {
   const goalStartedTracked = useRef(false);
   const betaStartedTracked = useRef(false);
   const [goalDraft, setGoalDraft] = useState("");
+  const [goalError, setGoalError] = useState("");
   const [goalSubmitted, setGoalSubmitted] = useState("");
-  const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
   const [betaEmail, setBetaEmail] = useState("");
+  const [betaError, setBetaError] = useState("");
+  const [isBetaSubmitting, setIsBetaSubmitting] = useState(false);
   const [betaSubmitted, setBetaSubmitted] = useState(false);
-  const [feedbackTone, setFeedbackTone] = useState<FeedbackTone | null>(null);
-  const [feedbackNote, setFeedbackNote] = useState("");
-  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+  const [isBetaModalOpen, setIsBetaModalOpen] = useState(false);
 
   useEffect(() => {
     trackEvent("landing_page_viewed", { path: window.location.pathname });
@@ -162,6 +130,35 @@ export function LandingPage() {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    if (!isBetaModalOpen) {
+      return;
+    }
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") {
+        return;
+      }
+
+      setIsBetaModalOpen(false);
+      trackEvent("beta_modal_closed", {
+        reason: "escape_key",
+        beta_submitted: betaSubmitted,
+        has_goal: Boolean(goalSubmitted),
+      });
+    };
+
+    window.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleEscape);
+    };
+  }, [betaSubmitted, goalSubmitted, isBetaModalOpen]);
+
   const scrollToTarget = (id: string) => {
     document.getElementById(id)?.scrollIntoView({
       behavior: "smooth",
@@ -190,6 +187,10 @@ export function LandingPage() {
   const handleGoalChange = (value: string) => {
     setGoalDraft(value);
 
+    if (goalError && value.trim()) {
+      setGoalError("");
+    }
+
     if (!goalStartedTracked.current && value.trim()) {
       goalStartedTracked.current = true;
       trackEvent("goal_input_started", {
@@ -199,39 +200,51 @@ export function LandingPage() {
     }
   };
 
+  const openBetaModal = (goal: string, source: string) => {
+    const goalTopic = getGoalTopic(goal);
+
+    betaStartedTracked.current = false;
+
+    startTransition(() => {
+      setGoalSubmitted(goal);
+      setBetaEmail("");
+      setBetaError("");
+      setIsBetaSubmitting(false);
+      setBetaSubmitted(false);
+      setIsBetaModalOpen(true);
+    });
+
+    trackEvent("beta_modal_opened", {
+      source,
+      goal_length_bucket: getLengthBucket(goal),
+      goal_length: goal.length,
+      goal_topic: goalTopic,
+    });
+  };
+
   const handleGoalSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const trimmedGoal = goalDraft.trim();
 
     if (!trimmedGoal) {
+      setGoalError("오늘 이루고 싶은 목표를 먼저 적어주세요.");
       trackEvent("goal_submit_validation_failed", {
         reason: "empty_goal",
       });
       return;
     }
 
-    const nextRecommendation = buildRecommendation(trimmedGoal);
-    betaStartedTracked.current = false;
+    setGoalError("");
+    const goalTopic = getGoalTopic(trimmedGoal);
 
     trackEvent("goal_submitted", {
       goal_length_bucket: getLengthBucket(trimmedGoal),
       goal_length: trimmedGoal.length,
+      goal_topic: goalTopic,
     });
 
-    startTransition(() => {
-      setGoalSubmitted(trimmedGoal);
-      setRecommendation(nextRecommendation);
-      setBetaSubmitted(false);
-      setFeedbackTone(null);
-      setFeedbackNote("");
-      setFeedbackSubmitted(false);
-      setBetaEmail("");
-    });
-
-    trackEvent("recommendation_viewed", {
-      recommendation_type: nextRecommendation.betaPrompt,
-    });
+    openBetaModal(trimmedGoal, "recommendation_cta");
   };
 
   const handleBetaFocus = () => {
@@ -241,60 +254,85 @@ export function LandingPage() {
 
     betaStartedTracked.current = true;
     trackEvent("beta_form_started", {
-      has_recommendation: Boolean(recommendation),
+      entry_point: "beta_modal",
+      has_goal: Boolean(goalSubmitted),
     });
   };
 
-  const handleBetaSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleBetaSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const trimmedEmail = betaEmail.trim();
     if (!trimmedEmail.includes("@")) {
+      setBetaError("유효한 이메일 주소를 입력해 주세요.");
       trackEvent("beta_application_validation_failed", {
         reason: "invalid_email",
       });
       return;
     }
 
-    setBetaSubmitted(true);
-    trackEvent("beta_application_submitted", {
-      email_domain: trimmedEmail.split("@")[1] ?? "unknown",
-      goal_length_bucket: getLengthBucket(goalSubmitted),
-    });
-  };
+    setBetaError("");
+    setIsBetaSubmitting(true);
 
-  const handleFeedbackChoice = (tone: FeedbackTone) => {
-    setFeedbackTone(tone);
-    trackEvent("feedback_option_selected", { tone });
-  };
+    try {
+      const response = await fetch("/api/beta-signups", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: trimmedEmail,
+          goal: goalSubmitted,
+          goalTopic: getGoalTopic(goalSubmitted),
+          pagePath: window.location.pathname,
+        }),
+      });
 
-  const handleFeedbackSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+      if (!response.ok) {
+        const data = (await response.json().catch(() => null)) as
+          | { message?: string }
+          | null;
 
-    if (!feedbackTone) {
-      trackEvent("feedback_validation_failed", { reason: "tone_missing" });
-      return;
+        const message =
+          data?.message || "사전 신청 저장 중 문제가 생겼습니다. 다시 시도해 주세요.";
+
+        setBetaError(message);
+        trackEvent("beta_application_save_failed", {
+          status_code: response.status,
+        });
+        return;
+      }
+
+      setBetaSubmitted(true);
+      trackEvent("beta_application_submitted", {
+        email_domain: trimmedEmail.split("@")[1] ?? "unknown",
+        goal_length_bucket: getLengthBucket(goalSubmitted),
+        goal_topic: getGoalTopic(goalSubmitted),
+        entry_point: "beta_modal",
+      });
+
+      setIsBetaModalOpen(false);
+      trackEvent("beta_modal_closed", {
+        reason: "submit_success",
+        beta_submitted: true,
+        has_goal: Boolean(goalSubmitted),
+      });
+
+      window.setTimeout(() => {
+        scrollToTarget("hero");
+      }, 0);
+    } finally {
+      setIsBetaSubmitting(false);
     }
-
-    setFeedbackSubmitted(true);
-    trackEvent("feedback_submitted", {
-      tone: feedbackTone,
-      has_note: Boolean(feedbackNote.trim()),
-    });
   };
 
-  const handleRecommendationReset = () => {
-    setGoalDraft("");
-    setGoalSubmitted("");
-    setRecommendation(null);
-    setBetaEmail("");
-    setBetaSubmitted(false);
-    setFeedbackTone(null);
-    setFeedbackNote("");
-    setFeedbackSubmitted(false);
-    goalStartedTracked.current = false;
-    betaStartedTracked.current = false;
-    trackEvent("recommendation_reset", { source: "cta_lab" });
+  const handleBetaModalClose = (reason: string) => {
+    setIsBetaModalOpen(false);
+    trackEvent("beta_modal_closed", {
+      reason,
+      beta_submitted: betaSubmitted,
+      has_goal: Boolean(goalSubmitted),
+    });
   };
 
   return (
@@ -314,8 +352,10 @@ export function LandingPage() {
                 첫 행동으로.
               </h1>
               <p>
-                생각만 하다가 끝나는 무거운 목표들. 첫걸음은 당신의 거대한 야심을 오늘
-                당장 5분 만에 끝낼 수 있는 행동 조각으로 분해합니다.
+                생각만 하다가 뭘 할지 몰라서 끝나는 목표가 없으셨나요?
+                <br />
+                Trace AI와의 대화를 통해 당신의 계획을 오늘 당장 5분 만에 끝낼 수 있는 행동
+                조각으로 분해해보세요.
               </p>
               <button
                 className="primary-button hero-cta"
@@ -459,9 +499,15 @@ export function LandingPage() {
         <FeatureSplit
           badgeTone="tint"
           badge={<Icon className="ui-icon" name="trending_up" />}
-          description="목표를 달성하고 피드백하면, Trace가 기록하고 다음 행동 선정에 참고합니다. 점진적으로 난이도를 조정하여 지속 가능한 성장을 돕습니다."
+          description="목표를 달성하지 못해도 이유를 피드백하면, Trace AI가 기록하고 다음 행동 선정에 참고합니다. 점진적으로 난이도를 조정하여 지속 가능한 성장을 돕습니다."
           id="faq"
-          title="피드백하고 성장합니다"
+          title={
+            <>
+              달성하지 못해도 괜찮습니다.
+              <br />
+              기록하고 나를 위한 앱을 만들어요
+            </>
+          }
           visual={
             <div className="growth-visual">
               <Image
@@ -479,16 +525,12 @@ export function LandingPage() {
           <div className="site-shell cta-shell">
             <span className="cta-kicker">START TODAY</span>
             <h2>
-              당신의 위대한 목표,
+              당신의 목표,
               <br />
-              가장 작게 시작할 시간입니다.
+               작지만 빠르게 시작할 시간입니다.
             </h2>
-            <p className="cta-intro">
-              단순 클릭 수만 보는 대신, 어디서 막히는지 읽을 수 있도록 목표 입력부터 추천 결과,
-              베타 신청과 피드백까지 한 흐름으로 측정합니다.
-            </p>
 
-            <div className="cta-lab">
+            <div className="cta-lab cta-lab-single">
               <form className="goal-form-card" onSubmit={handleGoalSubmit}>
                 <div className="card-label-row">
                   <span className="card-step">01</span>
@@ -498,14 +540,21 @@ export function LandingPage() {
                   목표 입력
                 </label>
                 <textarea
+                  aria-describedby={goalError ? "goal-input-warning" : undefined}
+                  aria-invalid={goalError ? "true" : "false"}
                   id="goal-input"
-                  className="goal-textarea"
+                  className={`goal-textarea${goalError ? " has-error" : ""}`}
                   onChange={(event) => handleGoalChange(event.target.value)}
                   onFocus={handleGoalFocus}
                   placeholder="예: 영어 시험 공부를 미루지 않고 오늘 바로 시작하고 싶어요"
                   rows={4}
                   value={goalDraft}
                 />
+                {goalError ? (
+                  <p className="goal-warning" id="goal-input-warning">
+                    {goalError}
+                  </p>
+                ) : null}
                 <div className="goal-hints">
                   <span>시험 준비</span>
                   <span>운동 시작</span>
@@ -514,121 +563,95 @@ export function LandingPage() {
                 <button className="secondary-button cta-submit" type="submit">
                   첫 행동 추천받기
                 </button>
-                <p className="cta-help">입력 내용은 이 데모 화면 안에서만 사용됩니다.</p>
               </form>
-
-              <div className="result-card">
-                <div className="card-label-row">
-                  <span className="card-step">02</span>
-                  <span className="card-label">추천 결과와 전환 흐름</span>
-                </div>
-
-                {recommendation ? (
-                  <>
-                    <div className="recommendation-box">
-                      <p className="recommendation-kicker">추천 첫 행동</p>
-                      <h3>{recommendation.action}</h3>
-                      <p>{recommendation.reason}</p>
-                    </div>
-
-                    <div className="recommendation-note">
-                      <Icon className="ui-icon note-icon" name="check_circle" />
-                      <span>{recommendation.note}</span>
-                    </div>
-
-                    <form className="beta-form" onSubmit={handleBetaSubmit}>
-                      <label className="beta-label" htmlFor="beta-email">
-                        베타 우선 체험 신청
-                      </label>
-                      <div className="beta-row">
-                        <input
-                          id="beta-email"
-                          className="beta-input"
-                          onChange={(event) => setBetaEmail(event.target.value)}
-                          onFocus={handleBetaFocus}
-                          placeholder="이메일을 입력하면 베타 초대를 보내드려요"
-                          type="email"
-                          value={betaEmail}
-                        />
-                        <button className="primary-button beta-button" type="submit">
-                          {recommendation.betaPrompt}
-                        </button>
-                      </div>
-                      <p className="beta-status">
-                        {betaSubmitted
-                          ? "베타 신청 신호가 기록되었습니다. 이제 추천 가치와 신청 전환을 같이 볼 수 있습니다."
-                          : "추천 결과를 본 뒤 신청까지 이어지는지를 보면 결과 자체의 설득력을 확인할 수 있습니다."}
-                      </p>
-                    </form>
-
-                    <form className="feedback-form" onSubmit={handleFeedbackSubmit}>
-                      <span className="feedback-label">이 추천이 실제로 시작에 도움이 될까요?</span>
-                      <div className="feedback-options">
-                        <button
-                          className={`feedback-chip${feedbackTone === "helpful" ? " active" : ""}`}
-                          onClick={() => handleFeedbackChoice("helpful")}
-                          type="button"
-                        >
-                          도움이 돼요
-                        </button>
-                        <button
-                          className={`feedback-chip${feedbackTone === "confusing" ? " active" : ""}`}
-                          onClick={() => handleFeedbackChoice("confusing")}
-                          type="button"
-                        >
-                          더 단순해야 해요
-                        </button>
-                      </div>
-                      <textarea
-                        className="feedback-textarea"
-                        onChange={(event) => setFeedbackNote(event.target.value)}
-                        placeholder="어디서 부담을 느꼈는지 적어주면 반복 사용 가능성 신호를 더 잘 읽을 수 있어요"
-                        rows={3}
-                        value={feedbackNote}
-                      />
-                      <div className="feedback-actions">
-                        <button className="secondary-button feedback-submit" type="submit">
-                          피드백 보내기
-                        </button>
-                        <button
-                          className="ghost-button"
-                          onClick={handleRecommendationReset}
-                          type="button"
-                        >
-                          다른 목표로 다시 보기
-                        </button>
-                      </div>
-                      <p className="feedback-status">
-                        {feedbackSubmitted
-                          ? "피드백이 기록되었습니다. 반복 사용 가능성을 읽는 데 이 구간이 가장 중요합니다."
-                          : "피드백 제출이 꾸준히 나오면, 단발 클릭보다 더 강한 재사용 신호로 볼 수 있습니다."}
-                      </p>
-                    </form>
-                  </>
-                ) : (
-                  <div className="result-empty">
-                    <p className="recommendation-kicker">이 구간에서 읽고 싶은 해석</p>
-                    <ul>
-                      <li>방문은 많은데 CTA 클릭이 낮으면 Hero 카피를 먼저 점검합니다.</li>
-                      <li>CTA 클릭은 높은데 목표 제출이 낮으면 입력 UX 부담을 의심합니다.</li>
-                      <li>목표 제출은 많은데 베타 신청이 낮으면 추천 가치가 약한 신호입니다.</li>
-                      <li>피드백 제출이 이어지면 반복 사용 가능성을 볼 수 있습니다.</li>
-                    </ul>
-                  </div>
-                )}
-              </div>
             </div>
           </div>
         </section>
       </main>
 
+      {isBetaModalOpen ? (
+        <div
+          className="modal-backdrop"
+          onClick={() => handleBetaModalClose("backdrop")}
+          role="presentation"
+        >
+          <div
+            aria-labelledby="beta-modal-title"
+            aria-modal="true"
+            className="modal-card"
+            onClick={(event) => event.stopPropagation()}
+            role="dialog"
+          >
+            <button
+              aria-label="베타 신청 모달 닫기"
+              className="modal-close"
+              onClick={() => handleBetaModalClose("close_button")}
+              type="button"
+            >
+              ×
+            </button>
+
+            <span className="modal-kicker">BETA ACCESS</span>
+            <h3 id="beta-modal-title">첫 행동 추천을 가장 먼저 받아보세요</h3>
+            <p className="modal-copy">
+              방금 적어주신 목표를 바탕으로 베타 우선 초대와 첫 행동 추천을 보내드릴게요.
+            </p>
+
+            <div className="modal-goal-preview">
+              <span>오늘 목표</span>
+              <strong>{goalSubmitted}</strong>
+            </div>
+
+            <form className="beta-modal-form" onSubmit={handleBetaSubmit}>
+              <label className="beta-label" htmlFor="beta-email">
+                베타 초대를 받을 이메일
+              </label>
+              <input
+                autoFocus
+                id="beta-email"
+                className="beta-input"
+                onChange={(event) => {
+                  setBetaEmail(event.target.value);
+                  if (betaError) {
+                    setBetaError("");
+                  }
+                }}
+                onFocus={handleBetaFocus}
+                placeholder="name@example.com"
+                type="email"
+                value={betaEmail}
+              />
+              <button
+                className="primary-button beta-modal-button"
+                disabled={isBetaSubmitting || betaSubmitted}
+                type="submit"
+              >
+                {isBetaSubmitting
+                  ? "저장 중..."
+                  : betaSubmitted
+                    ? "신청 완료"
+                    : "베타테스트 신청하기"}
+              </button>
+            </form>
+
+            {betaError ? <p className="beta-error">{betaError}</p> : null}
+
+            <p className="beta-status modal-status">
+              {betaSubmitted
+                ? "베타 신청이 기록되었습니다. 이제 목표 작성부터 신청 전환까지 analytics에서 함께 볼 수 있습니다."
+                : "모달 오픈, 입력 시작, 신청 제출 이벤트를 analytics로 함께 기록합니다."}
+            </p>
+          </div>
+        </div>
+      ) : null}
+
       <footer className="site-footer">
         <div className="site-shell footer-shell">
           <div className="footer-brand">
             <a href="#hero" onClick={() => handleNavClick("footer_logo")}>
-              Trace
+              Trace AI
             </a>
-            <p>© 2024 Trace. 모든 권리 보유.</p>
+            <p>© 2024 Trace AI. 모든 권리 보유.</p>
           </div>
 
           <div className="footer-links">
