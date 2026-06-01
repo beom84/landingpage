@@ -1,13 +1,13 @@
 "use client";
 
-import { sendGTMEvent } from "@next/third-parties/google";
+import { sendGAEvent } from "@next/third-parties/google";
 
 type AnalyticsValue = string | number | boolean | null | undefined;
 
 type AnalyticsParams = Record<string, AnalyticsValue>;
 
-const hasTagManagerId = Boolean(
-  process.env.NEXT_PUBLIC_GTM_ID?.trim() || "GTM-PZQ7HG3D"
+const hasMeasurementId = Boolean(
+  process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim() || "G-FG5T2B8DPX"
 );
 
 function sanitizeParams(
@@ -36,15 +36,12 @@ export function trackEvent(eventName: string, params: AnalyticsParams = {}) {
   const payload = sanitizeParams(params);
 
   if (process.env.NODE_ENV !== "production") {
-    console.log(`[GTM] ${eventName}`, payload);
+    console.log(`[GA] ${eventName}`, payload);
   }
 
-  if (!hasTagManagerId) {
+  if (!hasMeasurementId) {
     return;
   }
 
-  sendGTMEvent({
-    event: eventName,
-    ...payload,
-  });
+  sendGAEvent("event", eventName, payload);
 }

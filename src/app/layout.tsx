@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { Hanken_Grotesk } from "next/font/google";
-import { GoogleTagManager } from "@next/third-parties/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 
-const gtmId = process.env.NEXT_PUBLIC_GTM_ID?.trim() || "GTM-PZQ7HG3D";
+const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID?.trim() || "G-FG5T2B8DPX";
 
 const hankenGrotesk = Hanken_Grotesk({
   subsets: ["latin"],
@@ -24,17 +24,8 @@ export default function RootLayout({
   return (
     <html lang="ko" className="light">
       <body className={hankenGrotesk.variable}>
-        <noscript>
-          <iframe
-            height="0"
-            src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
-            style={{ display: "none", visibility: "hidden" }}
-            title="Google Tag Manager"
-            width="0"
-          />
-        </noscript>
         {children}
-        {gtmId ? <GoogleTagManager gtmId={gtmId} /> : null}
+        {gaId ? <GoogleAnalytics gaId={gaId} /> : null}
       </body>
     </html>
   );
