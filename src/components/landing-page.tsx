@@ -28,6 +28,35 @@ const painPoints = [
   },
 ] as const;
 
+const beforeItems = [
+  "보고서 써야 하고",
+  "회의 준비도 해야 하고",
+  "메일 답장도 해야 하고",
+  "정산도 해야 하고",
+  "병원 예약도 해야 하고...",
+] as const;
+
+const personalizedGrowthCards = [
+  {
+    description:
+      '"주로 월요일 오후에 업무가 밀리는 경향이 있네요. 이때는 5분 단위의 아주 작은 행동부터 시작해보는 건 어떨까요?"',
+    icon: "psychology" as const,
+    title: "미루는 습관 감지",
+  },
+  {
+    description:
+      '"당신은 오전 10시에 가장 높은 달성률을 보입니다. 중요한 공부는 이 시간에 배치해 드릴게요."',
+    icon: "schedule" as const,
+    title: "최적의 시간대 추천",
+  },
+  {
+    description:
+      '"연속된 회의 직후에는 목표를 달성하지 못하는 패턴이 발견되었습니다. 이때는 휴식 시간을 먼저 제안합니다."',
+    icon: "analytics" as const,
+    title: "실패 패턴 분석",
+  },
+] as const;
+
 const footerLinks = [
   "이용약관",
   "개인정보처리방침",
@@ -168,7 +197,7 @@ export function LandingPage() {
 
   const handleCtaClick = (origin: string) => {
     trackEvent("cta_clicked", { origin, target: "cta" });
-    scrollToTarget("cta");
+    scrollToTarget("start-today");
   };
 
   const handleNavClick = (target: string) => {
@@ -345,24 +374,17 @@ export function LandingPage() {
             <div className="hero-copy">
               <span className="eyebrow">GOAL TO ACTION SYSTEM</span>
               <h1>
-                막연한 목표를,
+                할 일은 많은데, 시작을 못 하고 있다면
                 <br />
-                <span>지금 할 수 있는</span>
-                <br />
-                첫 행동으로.
+                <span>머릿속 할 일을 적기만 하세요.</span>
               </h1>
-              <p>
-                생각만 하다가 뭘 할지 몰라서 끝나는 목표가 없으셨나요?
-                <br />
-                Trace AI와의 대화를 통해 당신의 계획을 오늘 당장 5분 만에 끝낼 수 있는 행동
-                조각으로 분해해보세요.
-              </p>
+              <p>지금 해야 할 일 하나와 첫 행동까지 정리해드립니다.</p>
               <button
                 className="primary-button hero-cta"
                 onClick={() => handleCtaClick("hero_cta")}
                 type="button"
               >
-                오늘 하루 시작하기
+                내 할 일 정리해보기
               </button>
             </div>
 
@@ -410,9 +432,69 @@ export function LandingPage() {
         </section>
 
         <section
+          className="how-section scroll-reveal"
+          data-section="how-it-helps"
+          id="how-it-helps"
+        >
+          <div className="site-shell">
+            <div className="section-heading how-heading">
+              <span className="section-kicker">HOW IT HELPS</span>
+              <h2>복잡한 할 일을 지금 할 수 있는 행동으로 바꿔요</h2>
+              <p>
+                할 일을 전부 해내라고 말하지 않습니다. 지금 가장 중요한 일 하나와, 바로
+                시작할 수 있는 첫 행동을 제안합니다.
+              </p>
+            </div>
+
+            <div className="how-grid">
+              <article className="how-card how-card-before">
+                <div className="how-card-head">
+                  <span className="how-pill">BEFORE</span>
+                  <h3>머릿속 할 일이 너무 많을 때</h3>
+                </div>
+                <div className="how-before-stack">
+                  {beforeItems.map((item) => (
+                    <div className="how-before-item" key={item}>
+                      {item}
+                    </div>
+                  ))}
+                </div>
+                <p className="how-footer-copy">&ldquo;뭐부터 해야 하지?&rdquo;</p>
+              </article>
+
+              <div className="how-arrow" aria-hidden="true">
+                <Icon className="ui-icon" name="arrow_right_alt" />
+              </div>
+
+              <article className="how-card how-card-after">
+                <div className="how-card-head">
+                  <span className="how-pill how-pill-primary">AFTER</span>
+                  <h3>지금 할 일 하나만 남깁니다</h3>
+                </div>
+                <p className="how-after-copy">
+                  오늘은 회의 준비부터 시작해도 괜찮아요.
+                </p>
+                <div className="how-action-card">
+                  <div className="how-action-row">
+                    <span className="how-action-icon">
+                      <Icon className="ui-icon" name="bolt" />
+                    </span>
+                    <strong>첫 행동: 자료 파일을 열고 제목 3개만 확인하기</strong>
+                  </div>
+                  <span className="how-action-step">1</span>
+                </div>
+                <p className="how-footer-copy how-footer-copy-primary">
+                  10분만 해도 다시 시작한 거예요.
+                </p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section
           className="pain-section scroll-reveal"
           data-section="pain-points"
-          id="science"
+          id="pain-points"
         >
           <div className="site-shell">
             <div className="section-heading">
@@ -433,8 +515,13 @@ export function LandingPage() {
         </section>
 
         <FeatureSplit
-          badge={<Icon className="ui-icon" name="add" />}
-          description="'영어 시험 공부'라는 단어를 입력하면, 나의 현재 상황에 맞춰 당장 가능한 단위 행동을 제안합니다."
+          reverse
+          description={
+            <>
+              &apos;영어 시험 공부&apos;라는 목표를 입력하면, 질문을 통해 나의 현재 상황에 맞춰
+              당장 가능한 단위 행동을 제안합니다.
+            </>
+          }
           id="features"
           title={
             <>
@@ -457,9 +544,13 @@ export function LandingPage() {
 
         <FeatureSplit
           badge={<Icon className="ui-icon" name="check_circle" />}
-          description="동기부여는 행동의 결과물입니다. 아주 작은 성공(Small Win)을 통해 도파민을 활성화하고 다음단계로 자연스럽게 이끕니다."
-          id="community"
-          reverse
+          description={
+            <>
+              동기부여는 행동의 결과물입니다. 아주 작은 성공(Small Win)을 통해 도파민을
+              활성화하고 다음 단계로 자연스럽게 이끕니다.
+            </>
+          }
+          id="momentum"
           title={
             <>
               생각보다 행동이
@@ -498,18 +589,23 @@ export function LandingPage() {
 
         <FeatureSplit
           badgeTone="tint"
-          badge={<Icon className="ui-icon" name="trending_up" />}
-          description="목표를 달성하지 못해도 이유를 피드백하면, Trace AI가 기록하고 다음 행동 선정에 참고합니다. 점진적으로 난이도를 조정하여 지속 가능한 성장을 돕습니다."
+          description={
+            <>
+              달성하지 못한 이유를 적으면, Trace가 기록하고 계획을 자동으로 조정합니다.
+              다음 행동 생성 시 피드백을 반영해요.
+            </>
+          }
           id="faq"
+          reverse
           title={
             <>
               달성하지 못해도 괜찮습니다.
               <br />
-              기록하고 나를 위한 앱을 만들어요
+              기록하고 계획을 자동으로 조정하세요.
             </>
           }
           visual={
-            <div className="growth-visual">
+            <div className="growth-visual growth-visual-frame">
               <Image
                 alt="Feedback and growth illustration"
                 className="growth-image"
@@ -517,17 +613,54 @@ export function LandingPage() {
                 src="/feedback-growth.png"
                 width={512}
               />
+              <div className="growth-badge" aria-hidden="true">
+                <Icon className="ui-icon" name="trending_up" />
+              </div>
             </div>
           }
         />
 
-        <section className="cta-section scroll-reveal" data-section="cta-section" id="cta">
+        <section
+          className="personalized-section scroll-reveal"
+          data-section="personalized-growth"
+          id="personalized-growth"
+        >
+          <div className="site-shell">
+            <div className="section-heading personalized-heading">
+              <span className="section-kicker">PERSONALIZED GROWTH</span>
+              <h2>사용자의 패턴을 기억하고 최적의 경로를 찾습니다</h2>
+              <p>
+                단순한 기록을 넘어, 사용자가 언제 집중력이 떨어지는지, 어떤 상황에서 계획을
+                미루게 되는지 분석합니다. 데이터에 기반하여 당신에게 가장 잘 맞는 계획
+                방식을 제안합니다.
+              </p>
+            </div>
+
+            <div className="personalized-grid">
+              {personalizedGrowthCards.map((card) => (
+                <article className="personalized-card" key={card.title}>
+                  <div className="personalized-icon">
+                    <Icon className="ui-icon" name={card.icon} />
+                  </div>
+                  <h3>{card.title}</h3>
+                  <p>{card.description}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section
+          className="cta-section scroll-reveal"
+          data-section="start-today"
+          id="start-today"
+        >
           <div className="site-shell cta-shell">
             <span className="cta-kicker">START TODAY</span>
             <h2>
-              당신의 목표,
+              당신의 목표를 적어보세요
               <br />
-               작지만 빠르게 시작할 시간입니다.
+              Trace가 함께 정리해드릴게요
             </h2>
 
             <div className="cta-lab cta-lab-single">
@@ -637,9 +770,7 @@ export function LandingPage() {
             {betaError ? <p className="beta-error">{betaError}</p> : null}
 
             <p className="beta-status modal-status">
-              {betaSubmitted
-                ? "베타 신청이 기록되었습니다. 이제 목표 작성부터 신청 전환까지 analytics에서 함께 볼 수 있습니다."
-                : "모달 오픈, 입력 시작, 신청 제출 이벤트를 analytics로 함께 기록합니다."}
+           
             </p>
           </div>
         </div>
@@ -649,7 +780,7 @@ export function LandingPage() {
         <div className="site-shell footer-shell">
           <div className="footer-brand">
             <a href="#hero" onClick={() => handleNavClick("footer_logo")}>
-              Trace AI
+              Trace
             </a>
             <p>© 2024 Trace AI. 모든 권리 보유.</p>
           </div>

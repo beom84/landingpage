@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 
 type FeatureSplitProps = {
-  badge: ReactNode;
+  badge?: ReactNode;
   badgeTone?: "solid" | "tint";
-  description: string;
+  description: ReactNode;
   id: string;
   reverse?: boolean;
   title: ReactNode;
@@ -22,14 +22,16 @@ export function FeatureSplit({
   return (
     <section
       className={`feature-section scroll-reveal${reverse ? " reverse" : ""}`}
-      data-section={id}
+        data-section={id}
       id={id}
     >
       <div className="site-shell feature-grid">
         <div className="feature-copy">
-          <div className={`feature-badge${badgeTone === "tint" ? " tint" : ""}`}>
-            {badge}
-          </div>
+          {badge ? (
+            <div className={`feature-badge${badgeTone === "tint" ? " tint" : ""}`}>
+              {badge}
+            </div>
+          ) : null}
           <h2>{title}</h2>
           <p>{description}</p>
         </div>

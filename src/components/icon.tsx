@@ -1,10 +1,14 @@
 type IconName =
   | "add"
   | "arrow_right_alt"
+  | "bolt"
   | "check"
   | "check_circle"
   | "more_horiz"
+  | "psychology"
+  | "schedule"
   | "star"
+  | "analytics"
   | "trending_up";
 
 type IconProps = {
@@ -37,6 +41,21 @@ export function Icon({ className, name }: IconProps) {
           <path d="m13 7 5 5-5 5" />
         </svg>
       );
+    case "analytics":
+      return (
+        <svg aria-hidden="true" className={className} {...sharedProps}>
+          <path d="M5 18V9" />
+          <path d="M12 18V6" />
+          <path d="M19 18v-4" />
+          <path d="M4 18h16" />
+        </svg>
+      );
+    case "bolt":
+      return (
+        <svg aria-hidden="true" className={className} {...sharedProps}>
+          <path d="M13 2 6 13h5l-1 9 8-12h-5l0-8Z" />
+        </svg>
+      );
     case "check":
       return (
         <svg aria-hidden="true" className={className} {...sharedProps}>
@@ -56,6 +75,24 @@ export function Icon({ className, name }: IconProps) {
           <circle cx="6.5" cy="12" r="1.2" fill="currentColor" stroke="none" />
           <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none" />
           <circle cx="17.5" cy="12" r="1.2" fill="currentColor" stroke="none" />
+        </svg>
+      );
+    case "psychology":
+      return (
+        <svg aria-hidden="true" className={className} {...sharedProps}>
+          <path d="M12 4.5a6.5 6.5 0 1 0 6.5 6.5c0-.8-.14-1.57-.4-2.3" />
+          <path d="M12 8.3a2.2 2.2 0 1 1 0 4.4" />
+          <path d="M12 12.7c-1.8 0-3.2 1.5-3.2 3.3" />
+          <path d="M16.8 6.2 20 3" />
+          <path d="m17.6 3 2.4 2.4" />
+        </svg>
+      );
+    case "schedule":
+      return (
+        <svg aria-hidden="true" className={className} {...sharedProps}>
+          <circle cx="12" cy="13" r="7" />
+          <path d="M12 9v4.2l2.7 1.7" />
+          <path d="M8 3h8" />
         </svg>
       );
     case "star":
