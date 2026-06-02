@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { startTransition, useEffect, useRef, useState } from "react";
-import { trackEvent } from "@/lib/analytics";
+import { initializeAnalytics, trackEvent } from "@/lib/analytics";
 import { FeatureSplit } from "./feature-split";
 import { Icon } from "./icon";
 import { SiteHeader } from "./site-header";
@@ -58,9 +58,9 @@ const personalizedGrowthCards = [
 ] as const;
 
 const footerLinks = [
-  "이용약관",
-  "개인정보처리방침",
-  "문의하기",
+  { label: "이용약관", target: "footer_terms" },
+  { label: "개인정보처리방침", target: "footer_privacy" },
+  { label: "문의하기", target: "footer_contact" },
 ] as const;
 
 type GoalTopic = "study" | "fitness" | "content" | "work" | "general";
@@ -117,9 +117,11 @@ function getGoalTopic(goal: string): GoalTopic {
 
 export function LandingPage() {
   const seenSections = useRef(new Set<string>());
+  const scrollMilestonesTracked = useRef(new Set<number>());
   const goalFocusTracked = useRef(false);
   const goalStartedTracked = useRef(false);
   const betaStartedTracked = useRef(false);
+  const betaEmailStartedTracked = useRef(false);
   const [goalDraft, setGoalDraft] = useState("");
   const [goalError, setGoalError] = useState("");
   const [goalSubmitted, setGoalSubmitted] = useState("");
@@ -130,6 +132,12 @@ export function LandingPage() {
   const [isBetaModalOpen, setIsBetaModalOpen] = useState(false);
 
   useEffect(() => {
+    initializeAnalytics({
+      analyticsVersion: "landing_v2",
+      experienceName: "trace_landing",
+      pageType: "landing_page",
+    });
+
     trackEvent("landing_page_viewed", { path: window.location.pathname });
 
     const observer = new IntersectionObserver(
@@ -156,7 +164,38 @@ export function LandingPage() {
     const sections = document.querySelectorAll<HTMLElement>("[data-section]");
     sections.forEach((section) => observer.observe(section));
 
-    return () => observer.disconnect();
+    const thresholds = [25, 50, 75, 90];
+
+    const handleScroll = () => {
+      const root = document.documentElement;
+      const scrollableHeight = root.scrollHeight - window.innerHeight;
+
+      if (scrollableHeight <= 0) {
+        return;
+      }
+
+      const scrollDepth = Math.round((window.scrollY / scrollableHeight) * 100);
+
+      thresholds.forEach((threshold) => {
+        if (
+          scrollDepth >= threshold &&
+          !scrollMilestonesTracked.current.has(threshold)
+        ) {
+          scrollMilestonesTracked.current.add(threshold);
+          trackEvent("scroll_depth_reached", {
+            scroll_depth_percent: threshold,
+          });
+        }
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   useEffect(() => {
@@ -196,12 +235,19 @@ export function LandingPage() {
   };
 
   const handleCtaClick = (origin: string) => {
-    trackEvent("cta_clicked", { origin, target: "cta" });
+    trackEvent("cta_clicked", {
+      cta_label: "내 할 일 정리해보기",
+      origin,
+      target: "start_today",
+    });
     scrollToTarget("start-today");
   };
 
   const handleNavClick = (target: string) => {
-    trackEvent("nav_clicked", { target });
+    trackEvent("nav_clicked", {
+      navigation_area: target === "hero_logo" ? "header_brand" : "header_nav",
+      target,
+    });
   };
 
   const handleGoalFocus = () => {
@@ -233,6 +279,7 @@ export function LandingPage() {
     const goalTopic = getGoalTopic(goal);
 
     betaStartedTracked.current = false;
+    betaEmailStartedTracked.current = false;
 
     startTransition(() => {
       setGoalSubmitted(goal);
@@ -286,6 +333,21 @@ export function LandingPage() {
       entry_point: "beta_modal",
       has_goal: Boolean(goalSubmitted),
     });
+  };
+
+  const handleBetaEmailChange = (value: string) => {
+    setBetaEmail(value);
+
+    if (betaError) {
+      setBetaError("");
+    }
+
+    if (!betaEmailStartedTracked.current && value.trim()) {
+      betaEmailStartedTracked.current = true;
+      trackEvent("beta_email_started", {
+        entry_point: "beta_modal",
+      });
+    }
   };
 
   const handleBetaSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -743,12 +805,7 @@ export function LandingPage() {
                 autoFocus
                 id="beta-email"
                 className="beta-input"
-                onChange={(event) => {
-                  setBetaEmail(event.target.value);
-                  if (betaError) {
-                    setBetaError("");
-                  }
-                }}
+                onChange={(event) => handleBetaEmailChange(event.target.value)}
                 onFocus={handleBetaFocus}
                 placeholder="name@example.com"
                 type="email"
@@ -779,7 +836,15 @@ export function LandingPage() {
       <footer className="site-footer">
         <div className="site-shell footer-shell">
           <div className="footer-brand">
-            <a href="#hero" onClick={() => handleNavClick("footer_logo")}>
+            <a
+              href="#hero"
+              onClick={() =>
+                trackEvent("nav_clicked", {
+                  navigation_area: "footer_brand",
+                  target: "footer_logo",
+                })
+              }
+            >
               Trace
             </a>
             <p>© 2024 Trace AI. 모든 권리 보유.</p>
@@ -787,8 +852,17 @@ export function LandingPage() {
 
           <div className="footer-links">
             {footerLinks.map((item) => (
-              <a href="#hero" key={item} onClick={() => handleNavClick(item)}>
-                {item}
+              <a
+                href="#hero"
+                key={item.target}
+                onClick={() =>
+                  trackEvent("nav_clicked", {
+                    navigation_area: "footer",
+                    target: item.target,
+                  })
+                }
+              >
+                {item.label}
               </a>
             ))}
           </div>
