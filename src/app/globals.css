@@ -256,10 +256,14 @@ img {
 .cta-shell h2 {
   margin: 18px 0 0;
   font-family: var(--font-display);
-  font-size: var(--headline-xl-mobile);
+  font-size: clamp(26px, 3.6vw + 14px, var(--headline-xl-mobile));
   font-weight: 800;
   line-height: 1.2;
   letter-spacing: -0.02em;
+}
+
+.responsive-break {
+  display: block;
 }
 
 .hero-copy h1 span {
@@ -311,11 +315,11 @@ img {
 
 .hero-phone {
   position: relative;
-  width: min(100%, 360px);
+  width: min(100%, clamp(268px, 78vw, 360px));
   border: 1px solid #e5e7eb;
-  border-radius: 32px;
+  border-radius: clamp(24px, 6vw, 32px);
   background: #ffffff;
-  padding: 32px;
+  padding: clamp(22px, 5vw, 32px);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 
@@ -336,15 +340,15 @@ img {
 .phone-card {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: clamp(10px, 2.8vw, 14px);
   border: 1px solid rgba(222, 225, 235, 0.95);
   border-radius: 18px;
   background: var(--color-surface);
-  padding: 16px;
+  padding: clamp(12px, 3.2vw, 16px);
 }
 
 .phone-card + .phone-card {
-  margin-top: 18px;
+  margin-top: clamp(12px, 3vw, 18px);
 }
 
 .phone-card.is-active {
@@ -398,9 +402,9 @@ img {
 .phone-cta {
   width: 100%;
   min-height: 56px;
-  margin-top: 24px;
+  margin-top: clamp(18px, 4vw, 24px);
   border-radius: 18px;
-  font-size: 18px;
+  font-size: clamp(15px, 2.6vw, 18px);
   box-shadow: none;
 }
 
@@ -666,7 +670,11 @@ img {
 }
 
 .feature-visual-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
+  margin-inline: auto;
 }
 
 .diagram-image {
@@ -675,6 +683,8 @@ img {
   max-width: 720px;
   height: auto;
   margin: 0 auto;
+  aspect-ratio: 1495 / 704;
+  object-fit: contain;
 }
 
 .checklist-image {
@@ -683,6 +693,8 @@ img {
   max-width: 720px;
   height: auto;
   margin: 0 auto;
+  aspect-ratio: 2670 / 1600;
+  object-fit: contain;
 }
 
 .checklist-card {
@@ -786,6 +798,8 @@ img {
   max-width: 320px;
   height: auto;
   margin: 0 auto;
+  aspect-ratio: 2416 / 1728;
+  object-fit: contain;
 }
 
 .growth-badge {
@@ -1458,6 +1472,11 @@ button:focus-visible {
 }
 
 @media (max-width: 767px) {
+  :root {
+    --space-container-padding: 18px;
+    --space-section-gap: 72px;
+  }
+
   .hero-section {
     padding-top: 56px;
   }
@@ -1467,6 +1486,20 @@ button:focus-visible {
     gap: 42px;
   }
 
+  .nav-shell {
+    gap: 12px;
+  }
+
+  .nav-cta {
+    min-height: 38px;
+    padding: 0 16px;
+    font-size: 11px;
+  }
+
+  .responsive-break {
+    display: none;
+  }
+
   .hero-copy {
     width: 100%;
     text-align: center;
@@ -1474,16 +1507,122 @@ button:focus-visible {
 
   .hero-copy p {
     margin-inline: auto;
+    margin-top: 18px;
+    font-size: 15px;
+    line-height: 1.65;
   }
 
   .hero-cta {
+    margin-top: 22px;
     margin-inline: auto;
   }
 
   .hero-phone-wrap {
     width: 100%;
     justify-content: center;
-    padding-inline: 12px;
+    padding-inline: 8px;
+  }
+
+  .hero-phone {
+    width: min(100%, 356px);
+    padding: 28px 22px;
+    border-radius: 28px;
+  }
+
+  .phone-card {
+    gap: 12px;
+    padding: 14px;
+  }
+
+  .phone-card + .phone-card {
+    margin-top: 14px;
+  }
+
+  .phone-cta {
+    min-height: 52px;
+    margin-top: 20px;
+    border-radius: 16px;
+    font-size: 16px;
+  }
+
+  .how-grid {
+    gap: 20px;
+  }
+
+  .how-card {
+    width: min(100%, 420px);
+    margin-inline: auto;
+    padding: 24px 20px;
+    border-radius: 28px;
+  }
+
+  .how-before-stack {
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .how-before-item:nth-child(2),
+  .how-before-item:nth-child(3),
+  .how-before-item:nth-child(4) {
+    transform: none;
+  }
+
+  .how-action-card {
+    padding: 20px 18px;
+  }
+
+  .pain-grid,
+  .personalized-grid {
+    gap: 16px;
+  }
+
+  .pain-card,
+  .personalized-card {
+    padding: 24px 20px;
+  }
+
+  .feature-grid {
+    gap: 28px;
+  }
+
+  .feature-copy {
+    max-width: 100%;
+  }
+
+  .feature-visual-wrap {
+    width: min(100%, 520px);
+  }
+
+  #features .feature-visual-wrap {
+    max-width: 100%;
+    aspect-ratio: 1495 / 704;
+  }
+
+  #momentum .feature-visual-wrap {
+    max-width: min(100%, 520px);
+    aspect-ratio: 2670 / 1600;
+  }
+
+  #faq .feature-visual-wrap {
+    width: min(100%, 320px);
+    aspect-ratio: 2416 / 1728;
+  }
+
+  #features .feature-visual-wrap > img,
+  #momentum .feature-visual-wrap > img,
+  #faq .feature-visual-wrap > img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .goal-form-card {
+    padding: 28px 20px;
+    border-radius: 28px;
+  }
+
+  .goal-textarea {
+    padding: 20px;
   }
 
   .hero-phone {
@@ -1504,6 +1643,132 @@ button:focus-visible {
 
   .modal-goal-preview strong {
     font-size: 18px;
+  }
+}
+
+@media (max-width: 374px) {
+  :root {
+    --space-container-padding: 16px;
+  }
+
+  .hero-copy h1,
+  .cta-shell h2 {
+    font-size: 26px;
+  }
+
+  .section-heading h2,
+  .feature-copy h2 {
+    font-size: 22px;
+  }
+
+  .hero-phone {
+    padding: 24px 18px;
+  }
+
+  .phone-card h3,
+  .checklist-card h3 {
+    font-size: 13px;
+  }
+
+  .phone-card p,
+  .pain-card p,
+  .personalized-card p {
+    font-size: 13px;
+  }
+
+  .how-card,
+  .pain-card,
+  .personalized-card,
+  .goal-form-card {
+    padding-inline: 18px;
+  }
+
+  .goal-hints span {
+    padding: 0 18px;
+  }
+}
+
+@media (max-width: 560px) and (max-height: 760px) {
+  .hero-section {
+    padding-top: 40px;
+    padding-bottom: 56px;
+  }
+
+  .hero-grid {
+    gap: 28px;
+  }
+
+  .eyebrow {
+    padding: 6px 12px;
+  }
+
+  .hero-copy h1 {
+    margin-top: 14px;
+    font-size: clamp(24px, 3vw + 11px, 30px);
+    line-height: 1.14;
+  }
+
+  .hero-copy p {
+    margin-top: 14px;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .hero-cta {
+    margin-top: 18px;
+    min-height: 48px;
+    padding-inline: 22px;
+  }
+
+  .hero-glow {
+    top: 12px;
+    right: 0;
+    height: 220px;
+    width: 220px;
+    filter: blur(34px);
+  }
+
+  .hero-star {
+    top: -8px;
+    right: -8px;
+    font-size: 28px;
+  }
+
+  .hero-phone {
+    width: min(100%, 318px);
+    padding: 20px 18px;
+    border-radius: 24px;
+  }
+
+  .phone-head {
+    margin-bottom: 18px;
+    font-size: 18px;
+  }
+
+  .phone-card {
+    border-radius: 16px;
+    padding: 12px;
+  }
+
+  .phone-card h3 {
+    font-size: 13px;
+  }
+
+  .phone-card p {
+    margin-top: 3px;
+    font-size: 11px;
+  }
+
+  .check-circle {
+    height: 22px;
+    width: 22px;
+  }
+
+  .phone-cta {
+    min-height: 46px;
+    margin-top: 16px;
+    border-radius: 15px;
+    font-size: 15px;
   }
 }
 

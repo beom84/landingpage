@@ -437,7 +437,7 @@ export function LandingPage() {
               <span className="eyebrow">GOAL TO ACTION SYSTEM</span>
               <h1>
                 할 일은 많은데, 시작을 못 하고 있다면
-                <br />
+                <br className="responsive-break" />
                 <span>머릿속 할 일을 적기만 하세요.</span>
               </h1>
               <p>지금 해야 할 일 하나와 첫 행동까지 정리해드립니다.</p>
@@ -503,7 +503,9 @@ export function LandingPage() {
               <span className="section-kicker">HOW IT HELPS</span>
               <h2>복잡한 할 일을 지금 할 수 있는 행동으로 바꿔요</h2>
               <p>
-                할 일을 전부 해내라고 말하지 않습니다. 지금 가장 중요한 일 하나와, 바로
+                할 일을 전부 해내라고 말하지 않습니다.
+                <br className="responsive-break" />
+                지금 가장 중요한 일 하나와, 바로
                 시작할 수 있는 첫 행동을 제안합니다.
               </p>
             </div>
@@ -588,7 +590,7 @@ export function LandingPage() {
           title={
             <>
               모호한 목표를
-              <br />
+              <br className="responsive-break" />
               세밀하게 분해합니다
             </>
           }
@@ -617,7 +619,7 @@ export function LandingPage() {
           title={
             <>
               나의 행동을
-              <br />
+              <br className="responsive-break" />
               확인하고 개선합니다.
             </>
           }
@@ -646,7 +648,7 @@ export function LandingPage() {
           title={
             <>
               늦잠자도 괜찮아요.
-              <br />
+              <br className="responsive-break" />
               Trace와 함께 조정하세요.
             </>
           }
@@ -701,7 +703,7 @@ export function LandingPage() {
             <span className="cta-kicker">START TODAY</span>
             <h2>
               당신의 목표를 적어보세요
-              <br />
+              <br className="responsive-break" />
               Trace가 함께 정리해드릴게요
             </h2>
 
