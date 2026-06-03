@@ -538,10 +538,10 @@ export function LandingPage() {
             <Image
               alt="영어 시험 공부 목표를 질문을 통해 지금 가능한 단위 행동으로 바꾸는 예시"
               className="diagram-image"
-              height={704}
+              height={1344}
               sizes="(min-width: 1024px) 560px, 100vw"
-              src="/goal-breakdown-flow.png"
-              width={1495}
+              src="/gemini-goal-breakdown-flow.png"
+              width={3128}
             />
           }
         />
