@@ -18,13 +18,13 @@ const painPoints = [
     number: "02",
     title: "목표가 너무 커서",
     description:
-      "거대한 산처럼 느껴지는 목표는 뇌에 스트레스를 줍니다. 우리 뇌는 위협을 느끼면 회피하기 마련입니다.",
+      "막연한 목표는 뇌에 스트레스를 줍니다. 우리 뇌는 위협을 느끼면 회피하기 마련입니다.",
   },
   {
     number: "03",
-    title: "실패 후 재조정이 힘들어서",
+    title: "행동을 기록하고 개선하지 않아서",
     description:
-      "어제 계획을 지키지 못하면 자책감이 앞섭니다. 다시 시작할 용기를 내는 것이 새 목표를 세우는 것보다 어렵습니다.",
+      "행동을 세우는 것보다 중요한 건 기록하고 개선하는 것입니다. 바꾸지 않는다면 좋은 계획도 나에게는 필요하지 않습니다.",
   },
 ] as const;
 
@@ -593,14 +593,14 @@ export function LandingPage() {
             </>
           }
           visual={
-            <div className="diagram-card" aria-hidden="true">
-              <div className="diagram-dashed" />
-              <div className="diagram-flow">
-                <div className="diagram-node">영어 시험 공부</div>
-                <Icon className="arrow-icon ui-icon" name="arrow_right_alt" />
-                <div className="diagram-node primary">단어 5개 읽기</div>
-              </div>
-            </div>
+            <Image
+              alt="영어 시험 공부 목표를 질문을 통해 지금 가능한 단위 행동으로 바꾸는 예시"
+              className="diagram-image"
+              height={704}
+              sizes="(min-width: 1024px) 560px, 100vw"
+              src="/goal-breakdown-flow.png"
+              width={1495}
+            />
           }
         />
 
@@ -608,44 +608,28 @@ export function LandingPage() {
           badge={<Icon className="ui-icon" name="check_circle" />}
           description={
             <>
-              동기부여는 행동의 결과물입니다. 아주 작은 성공(Small Win)을 통해 도파민을
-              활성화하고 다음 단계로 자연스럽게 이끕니다.
+              행동은 남겨야 다음에 더 잘할 수 있습니다. Trace는 작은 행동 하나하나를
+              기록하고, 무엇이 잘 맞았는지 돌아보며 다음 행동을 더 쉽게 이어가도록
+              돕습니다.
             </>
           }
           id="momentum"
           title={
             <>
-              생각보다 행동이
+              나의 행동을
               <br />
-              먼저 오게 만듭니다
+              확인하고 개선합니다.
             </>
           }
           visual={
-            <div className="checklist-card" aria-hidden="true">
-              <span className="celebration">🎉</span>
-              <h3>체크리스트 완료</h3>
-              <div className="progress-track">
-                <div className="progress-value" />
-              </div>
-              <div className="checklist-items">
-                <div className="checklist-item done">
-                  <div className="small-check">
-                    <Icon className="tiny-check-icon ui-icon" name="check" />
-                  </div>
-                  <span>책상 정리하기</span>
-                </div>
-                <div className="checklist-item done">
-                  <div className="small-check">
-                    <Icon className="tiny-check-icon ui-icon" name="check" />
-                  </div>
-                  <span>노트북 켜기</span>
-                </div>
-                <div className="checklist-item current">
-                  <div className="small-check outline" />
-                  <span>첫 문단 읽기</span>
-                </div>
-              </div>
-            </div>
+            <Image
+              alt="오늘 행동을 돌아보며 방해 요인을 확인하는 예시"
+              className="checklist-image"
+              height={1600}
+              sizes="(min-width: 1024px) 560px, 100vw"
+              src="/behavior-review.png"
+              width={2670}
+            />
           }
         />
 
@@ -653,32 +637,28 @@ export function LandingPage() {
           badgeTone="tint"
           description={
             <>
-              달성하지 못한 이유를 적으면, Trace가 기록하고 계획을 자동으로 조정합니다.
-              다음 행동 생성 시 피드백을 반영해요.
+              계획대로 하지 못한 날에도 괜찮습니다. Trace는 남겨진 기록을 바탕으로 지금
+              상황에 맞는 다음 행동을 다시 제안하고, 더 나에게 맞는 흐름으로 조정해줍니다.
             </>
           }
           id="faq"
           reverse
           title={
             <>
-              달성하지 못해도 괜찮습니다.
+              늦잠자도 괜찮아요.
               <br />
-              기록하고 계획을 자동으로 조정하세요.
+              Trace와 함께 조정하세요.
             </>
           }
           visual={
-            <div className="growth-visual growth-visual-frame">
-              <Image
-                alt="Feedback and growth illustration"
-                className="growth-image"
-                height={382}
-                src="/feedback-growth.png"
-                width={512}
-              />
-              <div className="growth-badge" aria-hidden="true">
-                <Icon className="ui-icon" name="trending_up" />
-              </div>
-            </div>
+            <Image
+              alt="일과 회고 및 조정 예시 화면"
+              className="growth-image"
+              height={1728}
+              sizes="(min-width: 1024px) 320px, 72vw"
+              src="/adjustment-card-v2.png"
+              width={2416}
+            />
           }
         />
 
