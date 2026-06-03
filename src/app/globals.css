@@ -724,7 +724,7 @@ img {
 .checklist-image {
   display: block;
   width: 100%;
-  max-width: 720px;
+  max-width: 640px;
   height: auto;
   margin: 0 auto;
   aspect-ratio: 2670 / 1600;
@@ -1677,7 +1677,7 @@ button:focus-visible {
   }
 
   #momentum .feature-visual-wrap {
-    max-width: min(100%, 520px);
+    max-width: min(100%, 460px);
     aspect-ratio: 2670 / 1600;
   }
 
