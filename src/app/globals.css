@@ -641,6 +641,10 @@ img {
   letter-spacing: -0.01em;
 }
 
+.feature-title-line {
+  display: block;
+}
+
 .pain-grid {
   display: grid;
   gap: 8px;
@@ -724,7 +728,7 @@ img {
 .checklist-image {
   display: block;
   width: 100%;
-  max-width: 640px;
+  max-width: 600px;
   height: auto;
   margin: 0 auto;
   aspect-ratio: 2670 / 1600;
@@ -829,10 +833,10 @@ img {
 .growth-image {
   display: block;
   width: 100%;
-  max-width: 320px;
+  max-width: 360px;
   height: auto;
   margin: 0 auto;
-  aspect-ratio: 2416 / 1728;
+  aspect-ratio: 2462 / 1696;
   object-fit: contain;
 }
 
@@ -1677,13 +1681,13 @@ button:focus-visible {
   }
 
   #momentum .feature-visual-wrap {
-    max-width: min(100%, 460px);
+    max-width: min(100%, 430px);
     aspect-ratio: 2670 / 1600;
   }
 
   #faq .feature-visual-wrap {
-    width: min(100%, 320px);
-    aspect-ratio: 2416 / 1728;
+    width: min(100%, 360px);
+    aspect-ratio: 2462 / 1696;
   }
 
   #features .feature-visual-wrap > img,

@@ -529,7 +529,7 @@ export function LandingPage() {
           id="features"
           title={
             <>
-              모호한 목표를
+              모호한 목표를{" "}
               <br className="responsive-break" />
               세밀하게 분해합니다
             </>
@@ -558,7 +558,7 @@ export function LandingPage() {
           id="momentum"
           title={
             <>
-              나의 행동을
+              나의 행동을{" "}
               <br className="responsive-break" />
               확인하고 개선합니다.
             </>
@@ -587,19 +587,18 @@ export function LandingPage() {
           reverse
           title={
             <>
-              늦잠을 자도 괜찮아요.
-              <br className="responsive-break" />
-              Trace와 함께 조정하세요.
+              <span className="feature-title-line">늦잠을 자도 괜찮아요.</span>
+              <span className="feature-title-line">Trace와 함께 조정하세요.</span>
             </>
           }
           visual={
             <Image
               alt="일과 회고 및 조정 예시 화면"
               className="growth-image"
-              height={1728}
+              height={1696}
               sizes="(min-width: 1024px) 320px, 72vw"
-              src="/adjustment-card-v2.png"
-              width={2416}
+              src="/gemini-daily-review-adjustment.png"
+              width={2462}
             />
           }
         />
