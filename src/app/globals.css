@@ -836,7 +836,7 @@ img {
   max-width: 360px;
   height: auto;
   margin: 0 auto;
-  aspect-ratio: 2462 / 1696;
+  aspect-ratio: 540 / 380;
   object-fit: contain;
 }
 
@@ -1687,7 +1687,7 @@ button:focus-visible {
 
   #faq .feature-visual-wrap {
     width: min(100%, 360px);
-    aspect-ratio: 2462 / 1696;
+    aspect-ratio: 540 / 380;
   }
 
   #features .feature-visual-wrap > img,

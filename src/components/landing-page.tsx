@@ -595,10 +595,10 @@ export function LandingPage() {
             <Image
               alt="일과 회고 및 조정 예시 화면"
               className="growth-image"
-              height={1696}
+              height={380}
               sizes="(min-width: 1024px) 320px, 72vw"
-              src="/gemini-daily-review-adjustment.png"
-              width={2462}
+              src="/daily-review-adjustment.svg"
+              width={540}
             />
           }
         />
