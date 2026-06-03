@@ -28,18 +28,10 @@ const painPoints = [
   },
 ] as const;
 
-const beforeItems = [
-  "보고서 써야 하고",
-  "회의 준비도 해야 하고",
-  "메일 답장도 해야 하고",
-  "정산도 해야 하고",
-  "병원 예약도 해야 하고...",
-] as const;
-
 const personalizedGrowthCards = [
   {
     description:
-      '"주로 월요일 오후에 업무가 밀리는 경향이 있네요. 이때는 5분 단위의 아주 작은 행동부터 시작해보는 건 어떨까요?"',
+      '"주로 월요일 오후에 업무가 밀리는 경향이 있네요. 이때는 5분 단위의 아주 작은 행동부터 시작해 보는 건 어떨까요?"',
     icon: "psychology" as const,
     title: "미루는 습관 감지",
   },
@@ -59,9 +51,15 @@ const personalizedGrowthCards = [
 
 const footerLinks = [
   { label: "이용약관", target: "footer_terms" },
-  { label: "개인정보처리방침", target: "footer_privacy" },
+  { label: "개인정보 처리방침", target: "footer_privacy" },
   { label: "문의하기", target: "footer_contact" },
 ] as const;
+
+const heroHeadlinePrimary = "할 일은 많은데, 시작을 못 하고 있나요?";
+const heroHeadlineSecondary = "머릿속 할 일을 적기만 하세요.";
+const heroDescription = "지금 가장 중요한 첫 번째 행동을 정리해 드립니다.";
+const ctaHeadlinePrimary = "당신의 목표를 적어 보세요";
+const ctaHeadlineSecondary = "Trace가 함께 정리해 드릴게요";
 
 type GoalTopic = "study" | "fitness" | "content" | "work" | "general";
 type BetaContactType = "email" | "phone";
@@ -481,12 +479,11 @@ export function LandingPage() {
           <div className="site-shell hero-grid">
             <div className="hero-copy">
               <span className="eyebrow">GOAL TO ACTION SYSTEM</span>
-              <h1>
-                할 일은 많은데, 시작을 못 하고 있다면
-                <br className="responsive-break" />
-                <span>머릿속 할 일을 적기만 하세요.</span>
-              </h1>
-              <p>지금 해야 할 일 하나와 첫 행동까지 정리해드립니다.</p>
+              <h2 className="hero-title">
+                <span className="hero-title-main">{heroHeadlinePrimary}</span>
+                <span className="hero-title-accent">{heroHeadlineSecondary}</span>
+              </h2>
+              <p>{heroDescription}</p>
               <button
                 className="primary-button hero-cta"
                 onClick={() => handleCtaClick("hero_cta")}
@@ -494,109 +491,6 @@ export function LandingPage() {
               >
                 내 할 일 정리해보기
               </button>
-            </div>
-
-            <div className="hero-phone-wrap" aria-hidden="true">
-              <div className="hero-glow" />
-              <Icon className="hero-star ui-icon" name="star" />
-              <div className="hero-phone">
-                <div className="phone-head">
-                  <span>오늘의 행동</span>
-                  <Icon className="dots-icon ui-icon" name="more_horiz" />
-                </div>
-
-                <div className="phone-card is-active">
-                  <div className="check-circle filled">
-                    <Icon className="check-icon ui-icon" name="check" />
-                  </div>
-                  <div>
-                    <h3>전공 서적 3페이지 읽기</h3>
-                    <p>목표: 기말고사 A+ 받기</p>
-                  </div>
-                </div>
-
-                <div className="phone-card">
-                  <div className="check-circle" />
-                  <div>
-                    <h3>운동화 끈 묶고 현관 서기</h3>
-                    <p>목표: 10km 마라톤 완주</p>
-                  </div>
-                </div>
-
-                <div className="phone-card is-muted">
-                  <div className="check-circle" />
-                  <div>
-                    <h3>물 한 잔 마시기</h3>
-                    <p>목표: 건강한 습관 만들기</p>
-                  </div>
-                </div>
-
-                <button className="primary-button phone-cta" type="button">
-                  완료하고 다음 단계로
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section
-          className="how-section scroll-reveal"
-          data-section="how-it-helps"
-          id="how-it-helps"
-        >
-          <div className="site-shell">
-            <div className="section-heading how-heading">
-              <span className="section-kicker">HOW IT HELPS</span>
-              <h2>복잡한 할 일을 지금 할 수 있는 행동으로 바꿔요</h2>
-              <p>
-                할 일을 전부 해내라고 말하지 않습니다.
-                <br className="responsive-break" />
-                지금 가장 중요한 일 하나와, 바로
-                시작할 수 있는 첫 행동을 제안합니다.
-              </p>
-            </div>
-
-            <div className="how-grid">
-              <article className="how-card how-card-before">
-                <div className="how-card-head">
-                  <span className="how-pill">BEFORE</span>
-                  <h3>머릿속 할 일이 너무 많을 때</h3>
-                </div>
-                <div className="how-before-stack">
-                  {beforeItems.map((item) => (
-                    <div className="how-before-item" key={item}>
-                      {item}
-                    </div>
-                  ))}
-                </div>
-                <p className="how-footer-copy">&ldquo;뭐부터 해야 하지?&rdquo;</p>
-              </article>
-
-              <div className="how-arrow" aria-hidden="true">
-                <Icon className="ui-icon" name="arrow_right_alt" />
-              </div>
-
-              <article className="how-card how-card-after">
-                <div className="how-card-head">
-                  <span className="how-pill how-pill-primary">AFTER</span>
-                  <h3>지금 할 일 하나만 남깁니다</h3>
-                </div>
-                <p className="how-after-copy">
-                  오늘은 회의 준비부터 시작해도 괜찮아요.
-                </p>
-                <div className="how-action-card">
-                  <div className="how-action-row">
-                    <span className="how-action-icon">
-                      <Icon className="ui-icon" name="bolt" />
-                    </span>
-                    <strong>첫 행동: 자료 파일을 열고 제목 3개만 확인하기</strong>
-                  </div>
-                  <span className="how-action-step">1</span>
-                </div>
-                <p className="how-footer-copy how-footer-copy-primary">
-                  10분만 해도 다시 시작한 거예요.
-                </p>
-              </article>
             </div>
           </div>
         </section>
@@ -686,14 +580,14 @@ export function LandingPage() {
           description={
             <>
               계획대로 하지 못한 날에도 괜찮습니다. Trace는 남겨진 기록을 바탕으로 지금
-              상황에 맞는 다음 행동을 다시 제안하고, 더 나에게 맞는 흐름으로 조정해줍니다.
+              상황에 맞는 다음 행동을 다시 제안하고, 나에게 더 맞는 흐름으로 조정해 줍니다.
             </>
           }
           id="faq"
           reverse
           title={
             <>
-              늦잠자도 괜찮아요.
+              늦잠을 자도 괜찮아요.
               <br className="responsive-break" />
               Trace와 함께 조정하세요.
             </>
@@ -747,10 +641,11 @@ export function LandingPage() {
         >
           <div className="site-shell cta-shell">
             <span className="cta-kicker">START TODAY</span>
-            <h2>
-              당신의 목표를 적어보세요
-              <br className="responsive-break" />
-              Trace가 함께 정리해드릴게요
+            <h2 className="cta-title">
+              <span className="cta-title-main">{ctaHeadlinePrimary}</span>
+              <span className="cta-title-accent">
+                <span className="cta-title-brand">Trace</span>가 함께 정리해 드릴게요
+              </span>
             </h2>
 
             <div className="cta-lab cta-lab-single">
@@ -815,9 +710,9 @@ export function LandingPage() {
             </button>
 
             <span className="modal-kicker">BETA ACCESS</span>
-            <h3 id="beta-modal-title">첫 행동 추천을 가장 먼저 받아보세요</h3>
+            <h3 id="beta-modal-title">첫 행동 추천을 가장 먼저 받아 보세요</h3>
             <p className="modal-copy">
-              방금 적어주신 목표를 바탕으로 베타 우선 초대와 첫 행동 추천을 보내드릴게요.
+              방금 적어 주신 목표를 바탕으로 베타 우선 초대와 첫 행동 추천을 보내 드릴게요.
             </p>
 
             <div className="modal-goal-preview">
@@ -880,7 +775,7 @@ export function LandingPage() {
                   ? "저장 중..."
                   : betaSubmitted
                     ? "신청 완료"
-                    : "베타테스트 신청하기"}
+                    : "베타 테스트 신청하기"}
               </button>
             </form>
 

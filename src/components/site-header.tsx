@@ -1,7 +1,6 @@
 "use client";
 
 const navItems = [
-  { href: "#how-it-helps", label: "작동 원리", target: "how_it_helps" },
   { href: "#pain-points", label: "고민 해결", target: "pain_points" },
   { href: "#personalized-growth", label: "패턴 학습", target: "personalized_growth" },
   { href: "#start-today", label: "지금 시작하기", target: "start_today" },
