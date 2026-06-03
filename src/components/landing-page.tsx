@@ -64,6 +64,7 @@ const footerLinks = [
 ] as const;
 
 type GoalTopic = "study" | "fitness" | "content" | "work" | "general";
+type BetaContactType = "email" | "phone";
 
 function getLengthBucket(value: string) {
   const length = value.trim().length;
@@ -115,17 +116,32 @@ function getGoalTopic(goal: string): GoalTopic {
   return "general";
 }
 
+function isValidEmail(value: string) {
+  return value.includes("@");
+}
+
+function normalizePhone(value: string) {
+  return value.replace(/[^\d+]/g, "");
+}
+
+function isValidPhone(value: string) {
+  const digits = value.replace(/\D/g, "");
+  return digits.length >= 9 && digits.length <= 15;
+}
+
 export function LandingPage() {
   const seenSections = useRef(new Set<string>());
   const scrollMilestonesTracked = useRef(new Set<number>());
   const goalFocusTracked = useRef(false);
   const goalStartedTracked = useRef(false);
   const betaStartedTracked = useRef(false);
-  const betaEmailStartedTracked = useRef(false);
+  const betaContactStartedTracked = useRef(false);
   const [goalDraft, setGoalDraft] = useState("");
   const [goalError, setGoalError] = useState("");
   const [goalSubmitted, setGoalSubmitted] = useState("");
-  const [betaEmail, setBetaEmail] = useState("");
+  const [betaContactType, setBetaContactType] =
+    useState<BetaContactType>("email");
+  const [betaContactValue, setBetaContactValue] = useState("");
   const [betaError, setBetaError] = useState("");
   const [isBetaSubmitting, setIsBetaSubmitting] = useState(false);
   const [betaSubmitted, setBetaSubmitted] = useState(false);
@@ -279,11 +295,12 @@ export function LandingPage() {
     const goalTopic = getGoalTopic(goal);
 
     betaStartedTracked.current = false;
-    betaEmailStartedTracked.current = false;
+    betaContactStartedTracked.current = false;
 
     startTransition(() => {
       setGoalSubmitted(goal);
-      setBetaEmail("");
+      setBetaContactType("email");
+      setBetaContactValue("");
       setBetaError("");
       setIsBetaSubmitting(false);
       setBetaSubmitted(false);
@@ -335,17 +352,27 @@ export function LandingPage() {
     });
   };
 
-  const handleBetaEmailChange = (value: string) => {
-    setBetaEmail(value);
+  const handleBetaContactTypeChange = (type: BetaContactType) => {
+    setBetaContactType(type);
+    setBetaContactValue("");
+
+    if (betaError) {
+      setBetaError("");
+    }
+  };
+
+  const handleBetaContactChange = (value: string) => {
+    setBetaContactValue(value);
 
     if (betaError) {
       setBetaError("");
     }
 
-    if (!betaEmailStartedTracked.current && value.trim()) {
-      betaEmailStartedTracked.current = true;
-      trackEvent("beta_email_started", {
+    if (!betaContactStartedTracked.current && value.trim()) {
+      betaContactStartedTracked.current = true;
+      trackEvent("beta_contact_started", {
         entry_point: "beta_modal",
+        contact_type: betaContactType,
       });
     }
   };
@@ -353,11 +380,22 @@ export function LandingPage() {
   const handleBetaSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const trimmedEmail = betaEmail.trim();
-    if (!trimmedEmail.includes("@")) {
-      setBetaError("유효한 이메일 주소를 입력해 주세요.");
+    const trimmedContactValue = betaContactValue.trim();
+    const normalizedPhone = normalizePhone(trimmedContactValue);
+    const isValidContact =
+      betaContactType === "email"
+        ? isValidEmail(trimmedContactValue)
+        : isValidPhone(trimmedContactValue);
+
+    if (!isValidContact) {
+      setBetaError(
+        betaContactType === "email"
+          ? "유효한 이메일 주소를 입력해 주세요."
+          : "유효한 전화번호를 입력해 주세요."
+      );
       trackEvent("beta_application_validation_failed", {
-        reason: "invalid_email",
+        reason: betaContactType === "email" ? "invalid_email" : "invalid_phone",
+        contact_type: betaContactType,
       });
       return;
     }
@@ -372,7 +410,11 @@ export function LandingPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email: trimmedEmail,
+          contactType: betaContactType,
+          contactValue:
+            betaContactType === "phone" ? normalizedPhone : trimmedContactValue,
+          email: betaContactType === "email" ? trimmedContactValue : "",
+          phone: betaContactType === "phone" ? normalizedPhone : "",
           goal: goalSubmitted,
           goalTopic: getGoalTopic(goalSubmitted),
           pagePath: window.location.pathname,
@@ -396,7 +438,11 @@ export function LandingPage() {
 
       setBetaSubmitted(true);
       trackEvent("beta_application_submitted", {
-        email_domain: trimmedEmail.split("@")[1] ?? "unknown",
+        contact_type: betaContactType,
+        email_domain:
+          betaContactType === "email"
+            ? trimmedContactValue.split("@")[1] ?? "unknown"
+            : "not_applicable",
         goal_length_bucket: getLengthBucket(goalSubmitted),
         goal_topic: getGoalTopic(goalSubmitted),
         entry_point: "beta_modal",
@@ -780,19 +826,51 @@ export function LandingPage() {
             </div>
 
             <form className="beta-modal-form" onSubmit={handleBetaSubmit}>
-              <label className="beta-label" htmlFor="beta-email">
-                베타 초대를 받을 이메일
-              </label>
+              <div className="beta-field-head">
+                <label className="beta-label" htmlFor="beta-contact">
+                  {betaContactType === "email"
+                    ? "베타 초대를 받을 이메일"
+                    : "베타 초대를 받을 전화번호"}
+                </label>
+                <button
+                  aria-label={
+                    betaContactType === "email"
+                      ? "전화번호 입력으로 전환"
+                      : "이메일 입력으로 전환"
+                  }
+                  className="beta-contact-switch"
+                  onClick={() =>
+                    handleBetaContactTypeChange(
+                      betaContactType === "email" ? "phone" : "email"
+                    )
+                  }
+                  type="button"
+                >
+                  <Icon
+                    className="ui-icon"
+                    name={betaContactType === "email" ? "call" : "mail"}
+                  />
+                </button>
+              </div>
               <input
                 autoFocus
-                id="beta-email"
+                id="beta-contact"
                 className="beta-input"
-                onChange={(event) => handleBetaEmailChange(event.target.value)}
+                inputMode={betaContactType === "phone" ? "tel" : "email"}
+                onChange={(event) => handleBetaContactChange(event.target.value)}
                 onFocus={handleBetaFocus}
-                placeholder="name@example.com"
-                type="email"
-                value={betaEmail}
+                placeholder={
+                  betaContactType === "email"
+                    ? "name@example.com"
+                    : "010-1234-5678"
+                }
+                type={betaContactType === "email" ? "email" : "tel"}
+                value={betaContactValue}
               />
+              <p className="beta-contact-caption">
+                우측 원형 버튼으로 {betaContactType === "email" ? "전화번호" : "이메일"} 입력으로
+                전환할 수 있어요.
+              </p>
               <button
                 className="primary-button beta-modal-button"
                 disabled={isBetaSubmitting || betaSubmitted}

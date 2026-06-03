@@ -3,7 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 export const runtime = "nodejs";
 
 type BetaSignupPayload = {
+  contactType?: unknown;
+  contactValue?: unknown;
   email?: unknown;
+  phone?: unknown;
   goal?: unknown;
   goalTopic?: unknown;
   pagePath?: unknown;
@@ -11,6 +14,19 @@ type BetaSignupPayload = {
 
 function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0;
+}
+
+function isValidEmail(value: string) {
+  return value.includes("@");
+}
+
+function normalizePhone(value: string) {
+  return value.replace(/[^\d+]/g, "");
+}
+
+function isValidPhone(value: string) {
+  const digits = value.replace(/\D/g, "");
+  return digits.length >= 9 && digits.length <= 15;
 }
 
 function getAppsScriptUrl() {
@@ -35,16 +51,36 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const contactType =
+    payload.contactType === "phone" ? "phone" : "email";
+  const contactValue =
+    typeof payload.contactValue === "string" ? payload.contactValue.trim() : "";
   const email = typeof payload.email === "string" ? payload.email.trim() : "";
+  const phone = normalizePhone(
+    typeof payload.phone === "string" ? payload.phone.trim() : ""
+  );
   const goal = typeof payload.goal === "string" ? payload.goal.trim() : "";
   const goalTopic =
     typeof payload.goalTopic === "string" ? payload.goalTopic.trim() : "general";
   const pagePath =
     typeof payload.pagePath === "string" ? payload.pagePath.trim() : "/";
 
-  if (!isNonEmptyString(email) || !email.includes("@")) {
+  const resolvedContactValue =
+    contactType === "phone" ? phone || normalizePhone(contactValue) : email || contactValue;
+
+  const isContactValid =
+    contactType === "phone"
+      ? isNonEmptyString(resolvedContactValue) && isValidPhone(resolvedContactValue)
+      : isNonEmptyString(resolvedContactValue) && isValidEmail(resolvedContactValue);
+
+  if (!isContactValid) {
     return NextResponse.json(
-      { message: "유효한 이메일 주소를 입력해 주세요." },
+      {
+        message:
+          contactType === "phone"
+            ? "유효한 전화번호를 입력해 주세요."
+            : "유효한 이메일 주소를 입력해 주세요.",
+      },
       { status: 400 }
     );
   }
@@ -63,7 +99,10 @@ export async function POST(request: NextRequest) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        email,
+        contactType,
+        contactValue: resolvedContactValue,
+        email: contactType === "email" ? resolvedContactValue : "",
+        phone: contactType === "phone" ? resolvedContactValue : "",
         goal,
         goalTopic,
         pagePath,

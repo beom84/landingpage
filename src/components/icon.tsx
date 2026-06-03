@@ -2,8 +2,10 @@ type IconName =
   | "add"
   | "arrow_right_alt"
   | "bolt"
+  | "call"
   | "check"
   | "check_circle"
+  | "mail"
   | "more_horiz"
   | "psychology"
   | "schedule"
@@ -56,6 +58,12 @@ export function Icon({ className, name }: IconProps) {
           <path d="M13 2 6 13h5l-1 9 8-12h-5l0-8Z" />
         </svg>
       );
+    case "call":
+      return (
+        <svg aria-hidden="true" className={className} {...sharedProps}>
+          <path d="M6.6 4.8c.4-.4 1-.5 1.5-.2l2 1.2c.6.3.8 1 .6 1.6l-.7 2c.8 1.7 2.2 3.1 3.9 3.9l2-.7c.6-.2 1.3 0 1.6.6l1.2 2c.3.5.2 1.1-.2 1.5l-1.3 1.3c-.5.5-1.2.8-1.9.7-3.3-.3-6.3-1.8-8.7-4.1-2.3-2.3-3.8-5.4-4.1-8.7-.1-.7.2-1.4.7-1.9Z" />
+        </svg>
+      );
     case "check":
       return (
         <svg aria-hidden="true" className={className} {...sharedProps}>
@@ -75,6 +83,13 @@ export function Icon({ className, name }: IconProps) {
           <circle cx="6.5" cy="12" r="1.2" fill="currentColor" stroke="none" />
           <circle cx="12" cy="12" r="1.2" fill="currentColor" stroke="none" />
           <circle cx="17.5" cy="12" r="1.2" fill="currentColor" stroke="none" />
+        </svg>
+      );
+    case "mail":
+      return (
+        <svg aria-hidden="true" className={className} {...sharedProps}>
+          <rect x="4" y="6.5" width="16" height="11" rx="2.2" />
+          <path d="m5.5 8 6.5 5 6.5-5" />
         </svg>
       );
     case "psychology":
