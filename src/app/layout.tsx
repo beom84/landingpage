@@ -11,9 +11,14 @@ const hankenGrotesk = Hanken_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Trace AI | 막연한 목표를 행동으로",
+  title: "Trace | 나를 위한 계획표",
   description:
-    "Trace AI는 막연한 목표를 오늘 바로 시작할 수 있는 첫 행동으로 나눠 주는 ADHD 친화형 실행 랜딩 페이지입니다.",
+    "Trace는 막연한 목표를 오늘 바로 시작할 수 있는 첫 행동으로 나눠 주는 ADHD 친화형 실행 랜딩 페이지입니다.",
+  icons: {
+    icon: "/trace-logo.png",
+    apple: "/trace-logo.png",
+    shortcut: "/trace-logo.png",
+  },
 };
 
 export default function RootLayout({

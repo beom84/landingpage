@@ -801,7 +801,7 @@ export function LandingPage() {
             >
               Trace
             </a>
-            <p>© 2024 Trace AI. 모든 권리 보유.</p>
+            <p>© 2024 Trace. 모든 권리 보유.</p>
           </div>
 
           <div className="footer-links">
